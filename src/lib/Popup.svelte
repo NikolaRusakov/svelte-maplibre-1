@@ -15,6 +15,7 @@
     getPopupTarget,
   } from './context.svelte.js';
   import type { MarkerClickInfo } from './types.js';
+  import type { SingleProperties } from '../routes/examples/cluster_feature_properties.js';
 
   interface Props {
     /** Show the built-in close button. By default the close button will be shown
@@ -43,6 +44,7 @@
     html?: string;
     /** Whether the popup is open or not. Can be set to manualy open the popup at `lngLat`. */
     open?: boolean;
+    feature?: GeoJSON.Feature<GeoJSON.Point, SingleProperties>;
     children?: Snippet<
       [
         {
@@ -64,7 +66,7 @@
     closeOnClickOutside = true,
     closeOnClickInside = false,
     closeOnMove = false,
-    openOn = 'click',
+    openOn = 'manual',
     openIfTopMost = true,
     focusAfterOpen = true,
     anchor = undefined,
@@ -73,9 +75,9 @@
     maxWidth = undefined,
     lngLat = $bindable(undefined),
     html = undefined,
-    open = $bindable(false),
+    open = $bindable(true),
     children,
-
+    feature: featureProp,
     onopen = undefined,
     onclose = undefined,
     onhover = undefined,
@@ -86,7 +88,7 @@
   const layerEvent = getLayerEvent();
   const popupTarget = getPopupTarget();
 
-  const clickEvents = ['click', 'dblclick', 'contextmenu'];
+  const clickEvents = ['click', 'dblclick', 'contextmenu', 'manual'];
 
   let popup: maplibregl.Popup | undefined = $state();
 
@@ -145,6 +147,27 @@
     map.on('click', globalClickHandler);
     map.on('contextmenu', globalClickHandler);
     markerClickManager.add(globalMarkerClickHandler);
+    if (openOn === 'manual') {
+      if (open) {
+        // console.log(children)
+        lngLat = featureProp?.geometry.coordinates as [number, number];
+        features = [];
+        setTimeout(() => (open = true));
+
+        // handleLayerEvent(popupTarget?.value);
+      }
+    }
+    map.on('data', (e) => {
+      // if (openOn === 'manual') {
+      //   if (open) {
+      //
+      //     lngLat = featureProp?.geometry.coordinates as [number, number];
+      //     features = [];
+      //     setTimeout(() => (open = true));
+      //     // handleLayerEvent(popupTarget?.value);
+      //   }
+      // }
+    });
     if (typeof popupTarget?.value === 'string') {
       map.on('click', popupTarget.value, handleLayerClick);
       map.on('dblclick', popupTarget.value, handleLayerClick);
@@ -342,7 +365,7 @@
 
   $effect(() => {
     if (popup && popupTarget?.value instanceof maplibregl.Marker) {
-      if (openOn === 'click') {
+      if (openOn === 'click' /* || openOn === 'manual' */) {
         popupTarget.value.setPopup(popup);
       } else if (popupTarget.value.getPopup() === popup) {
         popupTarget.value.setPopup(undefined);

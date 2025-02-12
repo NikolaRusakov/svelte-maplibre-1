@@ -31,7 +31,6 @@
     { href: '/examples/image_symbols', title: `Images in a Symbol Layer` },
     { href: '/examples/marker_layer', title: `Layer Consisting of Markers` },
     { href: '/examples/draw', title: `Drawing` },
-    { href: '/examples/3d_buildings', title: `3D Buildings` },
     { href: '/examples/geojson_extrusion', title: `GeoJSON Extrusion` },
     { href: '/examples/zoom_transition', title: `Transition Layers with Zoom` },
     { href: '/examples/overlapping_layer_events', title: `Overlapping Layer Events` },

@@ -19,7 +19,7 @@
 
   let clickedFeature: ClusterFeatureProperties | undefined = $state();
 
-  let openOn: 'click' | 'dblclick' | 'contextmenu' | 'hover' = $state('hover');
+  let openOn: 'click' | 'dblclick' | 'contextmenu' | 'hover' | 'manual' = $state('manual');
 </script>
 
 <p>
@@ -33,6 +33,7 @@
   <label><input type="radio" bind:group={openOn} value="hover" /> Hover</label>
   <label><input type="radio" bind:group={openOn} value="click" /> Click</label>
   <label><input type="radio" bind:group={openOn} value="dblclick" /> Double Click</label>
+  <label><input type="radio" bind:group={openOn} value="manual" /> Manual</label>
   <label
     ><input type="radio" bind:group={openOn} value="contextmenu" /> Context Menu (right-click)</label
   >
@@ -70,7 +71,7 @@
             /></svg
           >
         </div>
-        <Popup {openOn} closeOnClickInside>
+        <Popup {openOn} open={openOn === 'manual'} closeOnClickInside>
           <ClusterPopup {feature} />
         </Popup>
       {/snippet}
@@ -87,17 +88,17 @@
         feature: GeoJSON.Feature<GeoJSON.Point, SingleProperties>;
       })}
         <img src={feature.properties?.tsunami ? tsunamiImageUrl : quakeImageUrl} alt="Earthquake" />
-        <Popup {openOn} closeOnClickInside>
+        <Popup {openOn} open={openOn === 'manual'} {feature}>
           {@const props = feature.properties}
           <p>
             Date: <span class="font-medium text-gray-800"
               >{new Date(props?.time).toLocaleDateString()}</span
             >
           </p>
-          <p>Magnitude: <span class="font-medium text-gray-800">{props?.mag}</span></p>
+          <!-- <p>Magnitude: <span class="font-medium text-gray-800">{props?.mag}</span></p>
           <p>
             Tsunami: <span class="font-medium text-gray-800">{props?.tsunami ? 'Yes' : 'No'}</span>
-          </p>
+          </p> -->
         </Popup>
       {/snippet}
     </MarkerLayer>
